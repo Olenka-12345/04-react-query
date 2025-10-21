@@ -1,50 +1,34 @@
-import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import type { EnrichedMovie } from '../../types/movie';
-import styles from './MovieModal.module.css';
+import React from 'react';
+import css from './MovieModal.module.css';
+import type { Movie } from '../../types/movie';
 
 interface MovieModalProps {
-  movie: EnrichedMovie;
+  movie: Movie;
   onClose: () => void;
 }
 
-export default function MovieModal({ movie, onClose }: MovieModalProps) {
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleEsc);
-
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleEsc);
-    };
-  }, [onClose]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
-  return createPortal(
-    <div className={styles.backdrop} role="dialog" aria-modal="true" onClick={handleBackdropClick}>
-      <div className={styles.modal}>
-        <button className={styles.closeButton} aria-label="Close modal" onClick={onClose}>
-          &times;
-        </button>
+const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
+  return (
+    <div className={css.overlay} onClick={onClose}>
+      <div className={css.modal} onClick={(e) => e.stopPropagation()}>
+        <button className={css.close} onClick={onClose}>×</button>
         <img
-          src={movie.backdrop_url}
+          src={
+            movie.poster_path
+              ? `https://image.tmdb.org/t/p/w400${movie.poster_path}`
+              : 'https://via.placeholder.com/400x600?text=No+Image'
+          }
           alt={movie.title}
-          className={styles.image}
+          className={css.poster}
         />
-        <div className={styles.content}>
-          <h2>{movie.title}</h2>
-          <p>{movie.overview}</p>
-          <p><strong>Release Date:</strong> {movie.release_date}</p>
-          <p><strong>Rating:</strong> {movie.vote_average}/10</p>
-        </div>
+        <h2 className={css.title}>{movie.title}</h2>
+        <p className={css.overview}>{movie.overview}</p>
+        <p className={css.details}>
+          📅 {movie.release_date} | ⭐ {movie.vote_average}
+        </p>
       </div>
-    </div>,
-    document.body
+    </div>
   );
-}
+};
+
+export default MovieModal;

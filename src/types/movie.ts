@@ -1,18 +1,15 @@
 export interface Movie {
   id: number;
-  poster_path: string;
-  backdrop_path: string;
   title: string;
   overview: string;
+  poster_path: string;
   release_date: string;
   vote_average: number;
 }
 
-export interface EnrichedMovie extends Movie {
-  poster_url: string;
-  backdrop_url: string;
-}
-
-export interface TMDBResponse {
+export interface MoviesResponse {
+  page: number;
   results: Movie[];
+  total_pages: number;
+  total_results: number;
 }
